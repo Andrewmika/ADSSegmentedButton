@@ -132,8 +132,8 @@
 - (ADSSegmentedButton *)segButton {
     if (!_segButton) {
         _segButton = [[ADSSegmentedButton alloc] initWithTitles:self.titleArray tags:nil minimumButtonWidth:200];
-        [_segButton configNormalTitleColor:[UIColor greenColor] selectedTitleColor:[UIColor yellowColor] titleFont:[UIFont systemFontOfSize:13]];
-        [_segButton configBottomLineWithHighlightLineColor:[UIColor cyanColor] highlightLineHeight:2 backgroundLineColor:[UIColor grayColor] backgroundLineHeight:1];
+//        [_segButton configNormalTitleColor:[UIColor greenColor] selectedTitleColor:[UIColor yellowColor] titleFont:[UIFont systemFontOfSize:13]];
+//        [_segButton configBottomLineWithHighlightLineColor:[UIColor cyanColor] highlightLineHeight:2 backgroundLineColor:[UIColor grayColor] backgroundLineHeight:1];
         _segButton.delegate = self;
     }
     return _segButton;

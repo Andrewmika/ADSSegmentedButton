@@ -101,7 +101,7 @@
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(UIViewController *)viewController {
     SubPageViewController *VC = (SubPageViewController *)viewController;
     NSInteger currentVCIndex = VC.page.text.integerValue;
-    if (currentVCIndex == self.titleArray.count) {
+    if (currentVCIndex == self.titleArray.count - 1) {
         return nil;
     }
     currentVCIndex ++;
@@ -110,7 +110,10 @@
 }
 
 - (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray<UIViewController *> *)previousViewControllers transitionCompleted:(BOOL)completed {
-    
+    SubPageViewController *VC = (SubPageViewController *)self.pageViewController.viewControllers.firstObject;
+
+    [self.segButton selectedButtonWithTag:VC.page.text.integerValue];
+
 }
 
 #pragma mark - ADSSegmentedButtonDelegate
@@ -131,9 +134,9 @@
 
 - (ADSSegmentedButton *)segButton {
     if (!_segButton) {
-        _segButton = [[ADSSegmentedButton alloc] initWithTitles:self.titleArray tags:nil minimumButtonWidth:200];
-//        [_segButton configNormalTitleColor:[UIColor greenColor] selectedTitleColor:[UIColor yellowColor] titleFont:[UIFont systemFontOfSize:13]];
-//        [_segButton configBottomLineWithHighlightLineColor:[UIColor cyanColor] highlightLineHeight:2 backgroundLineColor:[UIColor grayColor] backgroundLineHeight:1];
+        _segButton = [[ADSSegmentedButton alloc] initWithTitles:self.titleArray tags:nil minimumButtonWidth:0];
+        [_segButton configNormalTitleColor:[UIColor darkGrayColor] selectedTitleColor:[UIColor greenColor] titleFont:[UIFont systemFontOfSize:15]];
+        [_segButton configBottomLineWithHighlightLineColor:[UIColor cyanColor] highlightLineHeight:2 backgroundLineColor:[UIColor grayColor] backgroundLineHeight:1];
         _segButton.delegate = self;
     }
     return _segButton;

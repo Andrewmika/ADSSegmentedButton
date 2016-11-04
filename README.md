@@ -1,4 +1,9 @@
 # ADSSegmentedButton-可滚动的菜单按钮栏
+[![CI Status](http://img.shields.io/travis/Andrewmika/ADSSegmentedButton.svg?style=flat)](https://travis-ci.org/AndrewShen/ADSSegmentedButton)
+[![Version](https://img.shields.io/cocoapods/v/ADSSegmentedButton.svg?style=flat)](http://cocoapods.org/pods/ADSSegmentedButton)
+[![License](https://img.shields.io/cocoapods/l/ADSSegmentedButton.svg?style=flat)](http://cocoapods.org/pods/ADSSegmentedButton)
+[![Platform](https://img.shields.io/cocoapods/p/ADSSegmentedButton.svg?style=flat)](http://cocoapods.org/pods/ADSSegmentedButton)
+
 ## 前言
 项目中经常会有菜单分栏设计，因此写了一个控件方便项目使用。控件使用了Masonry进行自动布局，支持配置按钮样式，最小按钮宽度（可选）和下划线（可选）颜色
 
@@ -76,3 +81,4 @@
  */
 - (void)selectedButtonWithTag:(NSInteger)tag;
 ```
+

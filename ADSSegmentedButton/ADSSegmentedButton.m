@@ -17,11 +17,23 @@
 @property (nonatomic, strong)  UIScrollView  *scrollView; // <##>
 @property (nonatomic, strong, readwrite)  UIButton  *selectedButton; // 当前选中的btn
 @property (nonatomic, assign)  CGFloat  moveLineHeight; // <##>
+
+@property (nonatomic, copy)  ADSSegmentedButtonCompletion  completion; // <##>
 @end
 
 @implementation ADSSegmentedButton
 
 #pragma mark - InterfaceMethod
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        [self addSubview:self.scrollView];
+    }
+    return self;
+}
+
 /**
  *  初始化一行按钮
  *
@@ -31,53 +43,61 @@
  *
  */
 - (instancetype)initWithTitles:(NSArray<NSString *> *)arrayTitles tags:(NSArray<NSNumber *> *)arrayTags minimumButtonWidth:(CGFloat)minimumButtonWidth {
-    self = [super init];
-    if (self) {
-        // btn 个数
-        [self addSubview:self.scrollView];
-        NSInteger btnCount = arrayTitles.count;
-        __block UIButton *btnLast;
-        [self.scrollView mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.edges.equalTo(self);
-        }];
-        [arrayTitles enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
-            [btn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-            [btn setTitleColor:[UIColor blueColor] forState:UIControlStateSelected];
-            [btn setTitle:obj forState:UIControlStateNormal];
-            [btn addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
-            NSNumber *tag = arrayTags ? arrayTags[idx] : @(idx);
-            btn.tag = tag.integerValue;
-            if (idx == 0) {
-                [btn setSelected:YES];
-                self.selectedButton = btn;
-                
-            }
-            [self.scrollView addSubview:btn];
-            [self.buttonArray addObject:btn];
-            
-            [btn mas_updateConstraints:^(MASConstraintMaker *make) {
-                make.height.top.bottom.equalTo(self.scrollView);
-                make.width.greaterThanOrEqualTo(@(minimumButtonWidth)).priorityHigh();
-                make.width.equalTo(self).multipliedBy(1.0 / btnCount).priorityMedium();
-                if (btnLast) {
-                    make.left.equalTo(btnLast.mas_right);
-                }
-                else {
-                    make.left.equalTo(self.scrollView);
-                }
-                
-            }];
-            btnLast = btn;
-
-        }];
-        [self.scrollView mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.right.equalTo(btnLast);
-        }];
+    if ([self init]) {
+        [self resetSegmentedButtonsWithTitles:arrayTitles tags:arrayTags minimumButtonWidth:minimumButtonWidth];
     }
     return self;
 }
 
+- (void)resetSegmentedButtonsWithTitles:(NSArray<NSString *> *)arrayTitles tags:(nullable NSArray<NSNumber *> *)arrayTags minimumButtonWidth:(CGFloat)minimumButtonWidth {
+    
+    [self.buttonArray makeObjectsPerformSelector:@selector(removeFromSuperview)];
+    [self.buttonArray removeAllObjects];
+    
+    NSInteger btnCount = arrayTitles.count;
+    __block UIButton *btnLast;
+    [self.scrollView mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self);
+    }];
+    [arrayTitles enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [btn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        [btn setTitleColor:[UIColor blueColor] forState:UIControlStateSelected];
+        [btn setTitle:obj forState:UIControlStateNormal];
+        [btn addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
+        NSNumber *tag = arrayTags ? arrayTags[idx] : @(idx);
+        btn.tag = tag.integerValue;
+        if (idx == 0) {
+            [btn setSelected:YES];
+            self.selectedButton = btn;
+            
+        }
+        [self.scrollView addSubview:btn];
+        [self.buttonArray addObject:btn];
+        
+        [btn mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.height.top.bottom.equalTo(self.scrollView);
+            make.width.greaterThanOrEqualTo(@(minimumButtonWidth)).priorityHigh();
+            make.width.equalTo(self).multipliedBy(1.0 / btnCount).priorityMedium();
+            if (btnLast) {
+                make.left.equalTo(btnLast.mas_right);
+            }
+            else {
+                make.left.equalTo(self.scrollView);
+            }
+            
+        }];
+        btnLast = btn;
+        
+    }];
+    [self.scrollView mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.right.equalTo(btnLast);
+    }];
+}
+
+- (void)observeButtonSelectedCallback:(ADSSegmentedButtonCompletion)completion {
+    self.completion = completion;
+}
 
 /**
  配置按钮样式
@@ -132,6 +152,9 @@
         [self p_updateLineConstraints];
         if ([self.delegate respondsToSelector:@selector(ADSSegmentedButtonDelegate:btnClickedWithTag:)]) {
             [self.delegate ADSSegmentedButtonDelegate:self btnClickedWithTag:self.selectedButton.tag];
+        }
+        if (self.completion) {
+            self.completion(currentBtn, currentBtn.tag);
         }
     }
 

@@ -10,6 +10,8 @@
 
 @class ADSSegmentedButton;
 
+typedef void(^ADSSegmentedButtonCompletion)(UIButton *selectedButton, NSInteger tag);
+
 NS_ASSUME_NONNULL_BEGIN
 @protocol ADSSegmentedButtonDelegate <NSObject>
 
@@ -33,6 +35,21 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithTitles:(NSArray<NSString *> *)arrayTitles tags:(nullable NSArray<NSNumber *> *)arrayTags minimumButtonWidth:(CGFloat)minimumButtonWidth;
 
+
+/**
+ 重设按钮
+ *  @param arrayTitles        按钮标题
+ *  @param arrayTags          按钮tag，可选，不设定则默认为0..n
+ *  @param minimumButtonWidth   最小按钮宽度,可为0
+ */
+- (void)resetSegmentedButtonsWithTitles:(NSArray<NSString *> *)arrayTitles tags:(nullable NSArray<NSNumber *> *)arrayTags minimumButtonWidth:(CGFloat)minimumButtonWidth;
+
+/**
+ 监听按钮点击
+
+ @param completion 点击回调
+ */
+- (void)observeButtonSelectedCallback:(ADSSegmentedButtonCompletion)completion;
 
 /**
  配置按钮样式,方法可选

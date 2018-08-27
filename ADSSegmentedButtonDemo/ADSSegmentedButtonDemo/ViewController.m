@@ -134,10 +134,14 @@
 
 - (ADSSegmentedButton *)segButton {
     if (!_segButton) {
-        _segButton = [[ADSSegmentedButton alloc] initWithTitles:self.titleArray tags:nil minimumButtonWidth:0];
+        _segButton = [[ADSSegmentedButton alloc] init];
+        [_segButton resetSegmentedButtonsWithTitles:self.titleArray tags:nil minimumButtonWidth:0];
         [_segButton configNormalTitleColor:[UIColor darkGrayColor] selectedTitleColor:[UIColor greenColor] titleFont:[UIFont systemFontOfSize:15]];
         [_segButton configBottomLineWithHighlightLineColor:[UIColor cyanColor] highlightLineHeight:2 backgroundLineColor:[UIColor grayColor] backgroundLineHeight:1];
         _segButton.delegate = self;
+        [_segButton observeButtonSelectedCallback:^(UIButton *selectedButton, NSInteger tag) {
+            NSLog(@"--->tag:%ld",tag);
+        }];
     }
     return _segButton;
 }

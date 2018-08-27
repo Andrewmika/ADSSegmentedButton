@@ -46,6 +46,9 @@
     
     // 设置约束
     [self configConstraints];
+    
+    [self.segButton resetSegmentedButtonsWithTitles:self.titleArray tags:nil minimumButtonWidth:0];
+
 }
 
 // 设置数据
@@ -135,7 +138,6 @@
 - (ADSSegmentedButton *)segButton {
     if (!_segButton) {
         _segButton = [[ADSSegmentedButton alloc] init];
-        [_segButton resetSegmentedButtonsWithTitles:self.titleArray tags:nil minimumButtonWidth:0];
         [_segButton configNormalTitleColor:[UIColor darkGrayColor] selectedTitleColor:[UIColor greenColor] titleFont:[UIFont systemFontOfSize:15]];
         [_segButton configBottomLineWithHighlightLineColor:[UIColor cyanColor] highlightLineHeight:2 backgroundLineColor:[UIColor grayColor] backgroundLineHeight:1];
         _segButton.delegate = self;

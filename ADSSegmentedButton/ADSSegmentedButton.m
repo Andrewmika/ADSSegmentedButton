@@ -11,6 +11,10 @@
 
 @interface ADSSegmentedButton ()
 
+@property (nonatomic, strong)  UIColor  *normalTitleColor; // <##>
+@property (nonatomic, strong)  UIColor  *selectedTitleColor; // <##>
+@property (nonatomic, strong)  UIFont  *titleFont; // <##>
+
 @property (nonatomic, strong)  NSMutableArray<UIButton *>  *buttonArray; // <##>
 @property (nonatomic, strong)  UIView  *moveLine; // 移动的线
 @property (nonatomic, strong)  UIView  *backgroundLine; // 底部背景线
@@ -30,6 +34,9 @@
     self = [super init];
     if (self) {
         [self addSubview:self.scrollView];
+        [self.scrollView mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.edges.equalTo(self);
+        }];
     }
     return self;
 }
@@ -55,10 +62,7 @@
     [self.buttonArray removeAllObjects];
     
     NSInteger btnCount = arrayTitles.count;
-    __block UIButton *btnLast;
-    [self.scrollView mas_updateConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(self);
-    }];
+    
     [arrayTitles enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
         [btn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
@@ -73,26 +77,29 @@
             
         }
         [self.scrollView addSubview:btn];
-        [self.buttonArray addObject:btn];
-        
         [btn mas_updateConstraints:^(MASConstraintMaker *make) {
             make.height.top.bottom.equalTo(self.scrollView);
             make.width.greaterThanOrEqualTo(@(minimumButtonWidth)).priorityHigh();
             make.width.equalTo(self).multipliedBy(1.0 / btnCount).priorityMedium();
-            if (btnLast) {
-                make.left.equalTo(btnLast.mas_right);
+            if (self.buttonArray.lastObject) {
+                make.left.equalTo(self.buttonArray.lastObject.mas_right);
             }
             else {
                 make.left.equalTo(self.scrollView);
             }
             
         }];
-        btnLast = btn;
+        [self.buttonArray addObject:btn];
+
         
     }];
-    [self.scrollView mas_updateConstraints:^(MASConstraintMaker *make) {
-        make.right.equalTo(btnLast);
-    }];
+    if (self.buttonArray.lastObject) {
+        [self.scrollView mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.right.equalTo(self.buttonArray.lastObject);
+        }];
+    }
+    
+    [self p_configButtonAppearance];
 }
 
 - (void)observeButtonSelectedCallback:(ADSSegmentedButtonCompletion)completion {
@@ -107,11 +114,11 @@
  @param font               标题字体，默认button字体
  */
 - (void)configNormalTitleColor:(UIColor *)normalTitleColor selectedTitleColor:(UIColor *)selectedTitleColor titleFont:(UIFont *)font {
-    [self.buttonArray enumerateObjectsUsingBlock:^(UIButton * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        !normalTitleColor ?: [obj setTitleColor:normalTitleColor forState:UIControlStateNormal];
-        !selectedTitleColor ?: [obj setTitleColor:selectedTitleColor forState:UIControlStateSelected];
-        !font ?: [obj.titleLabel setFont:font];
-    }];
+    self.normalTitleColor = normalTitleColor;
+    self.selectedTitleColor = selectedTitleColor;
+    self.titleFont = font;
+    
+    [self p_configButtonAppearance];
 }
 
 
@@ -142,6 +149,9 @@
  *  @param tag 选中按钮tag
  */
 - (void)selectedButtonWithTag:(NSInteger)tag {
+    if (!self.buttonArray.count) {
+        return;
+    }
     UIButton *currentBtn = self.buttonArray[tag];
     [self.scrollView scrollRectToVisible:currentBtn.frame animated:YES];
     if (self.selectedButton.tag != currentBtn.tag) {
@@ -182,12 +192,19 @@
     }];
 }
 
+- (void)p_configButtonAppearance {
+    [self.buttonArray enumerateObjectsUsingBlock:^(UIButton * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        !self.normalTitleColor ?: [obj setTitleColor:self.normalTitleColor forState:UIControlStateNormal];
+        !self.selectedTitleColor ?: [obj setTitleColor:self.selectedTitleColor forState:UIControlStateSelected];
+        !self.titleFont ?: [obj.titleLabel setFont:self.titleFont];
+    }];
+}
 #pragma mark - Override
 
 - (void)updateConstraints {
     if (_moveLine) {
         [self.moveLine mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.width.centerX.equalTo(self.selectedButton);
+            make.width.centerX.equalTo(self.selectedButton ? : @0);
             make.bottom.equalTo(self.backgroundLine);
             make.height.mas_equalTo(@(self.moveLineHeight));
         }];

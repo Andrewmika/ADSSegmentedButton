@@ -47,7 +47,7 @@
     // 设置约束
     [self configConstraints];
     
-    [self.segButton resetSegmentedButtonsWithTitles:self.titleArray tags:nil minimumButtonWidth:0];
+    [self.segButton resetSegmentedButtonsWithTitles:self.titleArray tags:nil minimumButtonWidth:0 alignment:ADSSegmentedButtonAlignmentJustified];
 
 }
 
@@ -138,8 +138,8 @@
 - (ADSSegmentedButton *)segButton {
     if (!_segButton) {
         _segButton = [[ADSSegmentedButton alloc] init];
-        [_segButton configNormalTitleColor:[UIColor darkGrayColor] selectedTitleColor:[UIColor greenColor] titleFont:[UIFont systemFontOfSize:15]];
-        [_segButton configBottomLineWithHighlightLineColor:[UIColor cyanColor] highlightLineHeight:2 backgroundLineColor:[UIColor grayColor] backgroundLineHeight:1];
+        [_segButton configNormalTitleColor:[UIColor darkGrayColor] selectedTitleColor:[UIColor greenColor] normalFont:[UIFont systemFontOfSize:15] selectedFont:nil];
+        [_segButton configBottomLineWithHighlightLineColor:[UIColor cyanColor] highlightLineHeight:2 backgroundLineColor:[UIColor grayColor] backgroundLineHeight:1 lineWidth:0];
         _segButton.delegate = self;
         [_segButton observeButtonSelectedCallback:^(UIButton *selectedButton, NSInteger tag) {
             NSLog(@"--->tag:%ld",tag);
